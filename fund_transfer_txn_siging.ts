@@ -5,6 +5,7 @@ import * as bip32 from "@scure/bip32";
 import * as bip39 from "@scure/bip39";
 
 import { formatBalance, uint8ArrayToHex } from "./utils";
+// import { get, uint8ArrayToHex } from "./utils";
 
 const mnemonic = "road donate inch warm beyond sea wink shoot fashion gain put vocal";
 const contractclassHashAX = "0x029927c8af6bccf3f6fda035981e765a7bdbf18a2dc0d630494f8758aa908e2b";
@@ -14,6 +15,8 @@ const EthPath = "m/44'/60'/0'/0/0";
 const StarkBasePath = "m/44'/9004'/0'/0/";
 const address_idx0 = 1;
 const address_idx1 = 20;
+
+
 const run = async () => {
 
     // ************************ Account Initialisation **********************************************
@@ -68,6 +71,9 @@ const run = async () => {
     const account1 = new Account(provider, accountAddressAX1, starkKeyPrivAX1);
 
     const compiledSierra = provider.getClassAt(contractAddress);
+    const contractAX0 = new Contract((await compiledSierra).abi, contractAddress, provider);
+    contractAX0.connect(account0);
+    console.log("\nAccount Connected to contract..\n");
 
     // Deploy Account
     // const callDataAX = new CallData((await compiledSierra).abi);
@@ -86,10 +92,32 @@ const run = async () => {
     // await provider.waitForTransaction(declareResponse.transaction_hash);
 
 
-    // ************************ Declare and Deploy Contract **********************************************
+    // ************************ Declare Contract **********************************************
+    // var nonce = await provider.getNonceForAddress(contractAddress);
+    // const chainId= constants.StarknetChainId.SN_GOERLI;
+    // const txnVersion = 1;
+    // const transactionContractDeclareHash = hash.calculateDeclareTransactionHash(contractAddress, accountAddressAX0, txnVersion, 0, chainId, nonce)
+    
+    // const declareMaxFee = await provider.getDeclareEstimateFee({
+    //   contract: {
+    //     abi:compiledSierra.abi, 
+    //     entry_points_by_type: (await compiledSierra).entry_points_by_type, 
+    //     },
+    //   senderAddress: accountAddressAX0,
+    //   signature: getSignature(starkKeyPrivAX0, transactionContractDeclareHash),
+    //   compiledClassHash: contractclassHashAX
+    // }, {nonce:nonce[0]})
 
-    // const callData = new CallData((await compiledSierra).abi);
-    // const constructor = callData.compile("constructor", { intial_value: [100] });
+    // const resp = await account0.declareIfNot({
+    //   contract: (await compiledSierra)[0],
+    //   compiledClassHash: contractclassHashAX
+    // }, {nonce:nonce[0], maxFee:declareMaxFee.overall_fee});
+
+
+    // ************************ Deploy Contract **********************************************
+
+    // const callDataContract = new CallData((await compiledSierra).abi);
+    // const constructor = callDataContract.compile("constructor", { intial_value: 100 });
     // const { suggestedMaxFee: estimatedFee1 } = await account0.estimateDeployFee({ classHash: contractclassHashAX, constructorCalldata: constructor });
     // const deployResponse = await account0.deployContract({
     //     classHash: contractclassHashAX
@@ -98,10 +126,6 @@ const run = async () => {
 
     
     // ************************ Funds Transfer **********************************************
-
-    const contractAX0 = new Contract((await compiledSierra).abi, contractAddress, provider);
-    contractAX0.connect(account0);
-    console.log("\nAccount Connected.\n");
     
     // Execute Transfer Transaction in one call
     const account0InitialBal = await contractAX0.balanceOf(account0.address) as bigint;
@@ -110,22 +134,24 @@ const run = async () => {
     console.log("Initial Balance 2 =", formatBalance(account1InitialBal, 18));
 
     console.log(cairo.uint256(5 * 10 ** 10));
-    const transferRespoonse = await account0.execute(
+    const transferResponse = await account0.execute(
         {
             contractAddress: contractAX0.address,
             entrypoint: 'transfer',
             calldata: {
               recipient: account1.address,
-              amount: cairo.uint256(5 * 10 ** 10), // 0.000000050000000000
+              amount: cairo.uint256(5 * (10**8)), // 0.00000000500000000
             },
           });
-    await provider.waitForTransaction(transferRespoonse.transaction_hash);
-    console.log({transferRespoonse})
+    await provider.waitForTransaction(transferResponse.transaction_hash);
+    console.log({transferResponse})
 
     const account0CurrentBal = await contractAX0.balanceOf(account0.address) as bigint;
     const account1CurrentBal = await contractAX0.balanceOf(account1.address) as bigint;
     console.log("Current Balance 1 =", formatBalance(account0CurrentBal, 18));
     console.log("Current Balance 2 =", formatBalance(account1CurrentBal, 18));
+
+    console.log("Fee Charged for transfer =", (account0InitialBal+account1InitialBal)-(account0CurrentBal+account1CurrentBal));
 
 }
 

@@ -32,6 +32,12 @@ dependencies:
   starknet:
     specifier: ^5.24.3
     version: 5.24.3
+  types:
+    specifier: ^0.1.1
+    version: 0.1.1
+  utils:
+    specifier: link:@noble/curves/abstract/utils
+    version: link:@noble/curves/abstract/utils
 
 packages:
 
@@ -257,6 +263,11 @@ packages:
 
   /typeforce@1.18.0:
     resolution: {integrity: sha512-7uc1O8h1M1g0rArakJdf0uLRSSgFcYexrVoKo+bzJd32gd4gDy2L/Z+8/FjPnU9ydY3pEnVPtr9FyscYY60K1g==}
+    dev: false
+
+  /types@0.1.1:
+    resolution: {integrity: sha512-JuntZtJj4MKLE9x/XBs7IjsznYhzETwr34pw3XJTKvgYtAMdeMG+o8x8U85E5Lm6eCPa1DdOdGVsHMwq4ZnZAg==}
+    engines: {node: '>= 0.6.0'}
     dev: false
 
   /url-join@4.0.1:
