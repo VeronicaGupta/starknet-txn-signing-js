@@ -20,6 +20,15 @@ dependencies:
   bip39:
     specifier: ^3.1.0
     version: 3.1.0
+  fs:
+    specifier: 0.0.1-security
+    version: 0.0.1-security
+  fs.f.ts:
+    specifier: link:@types/node/fs.f.ts
+    version: link:@types/node/fs.f.ts
+  json:
+    specifier: ^11.0.0
+    version: 11.0.0
   starknet:
     specifier: ^5.24.3
     version: 5.24.3
@@ -134,6 +143,10 @@ packages:
       sha.js: 2.4.11
     dev: false
 
+  /fs@0.0.1-security:
+    resolution: {integrity: sha512-3XY9e1pP0CVEUCdj5BmfIZxRBTSDycnbqhIOGec9QYtmVH2fbLpj86CFWkrNOkt/Fvty4KZG5lTglL9j/gJ87w==}
+    dev: false
+
   /hash-base@3.1.0:
     resolution: {integrity: sha512-1nmYp/rhMDiE7AYkDw+lLwlAzz0AntGIe51F3RfFfEqyQ3feY2eI/NcwC6umIQVOASPMsWJLJScWKSSvzL9IVA==}
     engines: {node: '>=4'}
@@ -154,6 +167,12 @@ packages:
       whatwg-fetch: 3.6.20
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /json@11.0.0:
+    resolution: {integrity: sha512-N/ITv3Yw9Za8cGxuQqSqrq6RHnlaHWZkAFavcfpH/R52522c26EbihMxnY7A1chxfXJ4d+cEFIsyTgfi9GihrA==}
+    engines: {node: '>=0.10.0'}
+    hasBin: true
     dev: false
 
   /lossless-json@2.0.11:

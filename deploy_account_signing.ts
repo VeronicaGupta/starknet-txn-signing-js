@@ -45,9 +45,9 @@ const run = async () => {
     console.log('Account address=', accountAXAddress, "\n");
 
 
-    // Start Account Deployment txn
+    // ************************Start Account Deployment txn**********************************************
 
-    const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v3/9643040ea0d04fd0ac5a38cb5f025b02" });
+    const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v3/6345ca3fadb74eafb7bf38b922258b1e" });
     
     // Get txn details
     // console.log("TransactionByHash: ", await provider.getTransactionByHash("0x2c95c8b580664c1a2a8281ff0ac54ad7ff0e0b96ee778ed364cdd1f3f6dc84b"));
@@ -96,12 +96,13 @@ const run = async () => {
         maxFee: maxFee,
         version: txnVersion,
         chainId: constants.StarknetChainId.SN_GOERLI,
-        nonce: 0,
+        nonce: constants.ZERO,
     });
+    
     // console.log("\nsigner1 =",(signer1 as WeierstrassSignatureType).toCompactHex());
     console.log("{ \nsigner1");
-    console.log("     r =", "0x" + uint8ArrayToHex(signature.toCompactRawBytes().slice(0, 32)));
-    console.log("     s =", "0x" + uint8ArrayToHex(signature.toCompactRawBytes().slice(32)));
+    console.log("     r =", "0x" + uint8ArrayToHex((signer1 as WeierstrassSignatureType).toCompactRawBytes().slice(0, 32)));
+    console.log("     s =", "0x" + uint8ArrayToHex((signer1 as WeierstrassSignatureType).toCompactRawBytes().slice(32)));
     console.log("}");
 
 
@@ -111,6 +112,8 @@ const run = async () => {
     console.log({fullPubKeyAX})
     const signatureVerifiedStatus = ec.starkCurve.verify(ec.starkCurve.Signature.fromCompact((signer1 as WeierstrassSignatureType).toCompactHex()), transactionAXDeployHash, fullPubKeyAX);
     console.log({signatureVerifiedStatus});
+
+
 
 }
 
