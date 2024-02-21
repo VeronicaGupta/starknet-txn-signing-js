@@ -14,7 +14,7 @@ const contractAddress = "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab0720185
 const EthPath = "m/44'/60'/0'/0/0";
 const StarkBasePath = "m/44'/9004'/0'/0/";
 const address_idx0 = 1;
-const address_idx1 = 20;
+const address_idx1 = 2;
 
 
 const run = async () => {
@@ -151,7 +151,7 @@ const run = async () => {
     console.log("Current Balance 1 =", formatBalance(account0CurrentBal, 18));
     console.log("Current Balance 2 =", formatBalance(account1CurrentBal, 18));
 
-    console.log("Fee Charged for transfer =", (account0InitialBal+account1InitialBal)-(account0CurrentBal+account1CurrentBal));
+    // console.log("Fee Charged for transfer =", formatBalance((account0InitialBal+account1InitialBal)-(account0CurrentBal+account1CurrentBal), 18));
 
 }
 

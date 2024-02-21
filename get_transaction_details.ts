@@ -1,4 +1,5 @@
-import { RpcProvider } from "starknet";
+import { Signature } from "@scure/starknet";
+import { RpcProvider, WeierstrassSignatureType } from "starknet";
 
 const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v3/6345ca3fadb74eafb7bf38b922258b1e" });
 
@@ -6,10 +7,18 @@ const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v
 
 const run = async () => {
     // const getTxnDetails = provider.getTransactionByHash("0x06fa9414257fb6b8db4cb949e97ac7f707cca492e862e4d9bbb9735abf9ef213");
-    const getTxnDetails = provider.getTransactionByHash("0x044c373c32228283d4ffbe14e958ebd6737abdec76d63a6895453a9be11360cd");
+    const getTxnDetails = await provider.getTransactionByHash("0x267be3f5c9709e70bcc1f5256723f6733db5a6fc30997ae053f583e35bc8d7");
 
     console.log({getTxnDetails});
+    console.log("sig:", (getTxnDetails as any).signature[0]+(getTxnDetails as any).signature[1].slice(2));
+
+    const pubKey = {publicKey: '0x496886c53d4d46a0863876d21e726ca8887300a0d436e6c82f509639a5edd4c'};
+    const nonce = await provider.getNonceForAddress('0x5b54886cff6e7684da3cf1e1ba93c34084698f19fea5be95b9ed8f417d75739');
+
+    console.log("pubkey:", pubKey.publicKey.slice(2));
+    console.log("nonce:", nonce)
 }
+
 
 run()
 
@@ -89,6 +98,32 @@ run()
 //       "account_deployment_data": [],
 //       "nonce_data_availability_mode": "L1",
 //       "fee_data_availability_mode": "L1"
+//     },
+//     "id": 1
+//   }
+
+// {
+//     "jsonrpc": "2.0",
+//     "result": {
+//       "transaction_hash": "0x267be3f5c9709e70bcc1f5256723f6733db5a6fc30997ae053f583e35bc8d7",
+//       "type": "INVOKE",
+//       "version": "0x1",
+//       "nonce": "0x6",
+//       "max_fee": "0x6659d459f52",
+//       "sender_address": "0x5b54886cff6e7684da3cf1e1ba93c34084698f19fea5be95b9ed8f417d75739",
+//       "signature": [
+//         "0x512eeb687e2774e4b028b34351012c7fe2927f67ea5f926ed5089752d4afd57",
+//         "0x67f7ee13ec67be13e737989880d64c9e4e6c0b51860dc347c0832eb49cd28bd"
+//       ],
+//       "calldata": [
+//         "0x1",
+//         "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+//         "0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e",
+//         "0x3",
+//         "0x3c7cacd75286c2ddc26ce66f2139610645bf3e47958ae6f8b55d7bb6e8623dc",
+//         "0x1dcd6500",
+//         "0x0"
+//       ]
 //     },
 //     "id": 1
 //   }
