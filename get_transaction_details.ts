@@ -1,5 +1,5 @@
 import { Signature } from "@scure/starknet";
-import { RpcProvider, WeierstrassSignatureType } from "starknet";
+import { RpcProvider, WeierstrassSignatureType, cairo } from "starknet";
 
 const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v3/6345ca3fadb74eafb7bf38b922258b1e" });
 
@@ -17,6 +17,11 @@ const run = async () => {
 
     console.log("pubkey:", pubKey.publicKey.slice(2));
     console.log("nonce:", nonce)
+
+    const amount = cairo.uint256(5 * (10**8));
+    let bigNumber = BigInt(amount);
+    console.log('Hex:'+ bigNumber.toString(16)+' to bigInt '+bigNumber);
+    console.log(bigNumber.toString(16));
 }
 
 

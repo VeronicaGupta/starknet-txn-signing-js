@@ -1,17 +1,28 @@
-import { WeierstrassSignatureType, ec, Signer, hash, CallData, RpcProvider, TransactionType, constants, encode, cairo, Account } from "starknet";
+import { WeierstrassSignatureType, ec, Signer, hash, CallData, RpcProvider, TransactionType, constants, encode, cairo, Account, Contract } from "starknet";
 
 import * as mStarknet from '@scure/starknet';
 import * as bip32 from "@scure/bip32";
 import * as bip39 from '@scure/bip39';
 
-const address_idx = 1;
+const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v3/6345ca3fadb74eafb7bf38b922258b1e" });
 
 const mnemonic = "road donate inch warm beyond sea wink shoot fashion gain put vocal";
-const contractAXclassHash = "0x029927c8af6bccf3f6fda035981e765a7bdbf18a2dc0d630494f8758aa908e2b";
+
+const contractAXclassHash = "0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
+const ethContractAddress  = '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7';
+const strkContractAddress = '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d';
+const version = '0x1';
+const maxFee = '0x6659d45d645';
+const chainId = constants.StarknetChainId.SN_GOERLI;
+
+const address_idx = 0;
+const amount = cairo.uint256(5 * (10**8)).low; // 0.00000000500000000
+const receipientAddress = '0x0063de007721dDD7CCCA23Dd9345b70F77Af7B2FCcED9E3df1f390D0f1c61E9D';
 
 // const mnemonic = "boy repair subway sketch rare quarter impulse frame chapter sponsor kingdom engine";
 // const contractAXclassHash = "0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
 // const mnemonic = "electric exotic puppy icon enrich cradle field apology cricket remain vintage candy margin human myself smile cattle wild bean damp public spend marriage unusual";
+
 const run = async () => {
 
     const masterSeed = bip39.mnemonicToSeedSync(mnemonic);
@@ -27,115 +38,129 @@ const run = async () => {
     console.log('hdKey2 PrivKey=', uint8ArrayToHex(hdKey2.privateKey!), "\n");
 
     const pathBase = "m/44'/9004'/0'/0/";
-
-    const path = pathBase + String(address_idx);
-    console.log("path =", path, "\n");
-
+    const path = pathBase + String(address_idx);    
     const hdKeyi = hdKey2.derive(path);
-    // console.log('hdKeyi PrivKey=', uint8ArrayToHex(hdKeyi.privateKey!));
-
 
     // get stark PrivKey, PubKey and AccountAddress 
-
     const starkKeyPrivAX = "0x" + mStarknet.grindKey(hdKeyi.privateKey!);
-    // console.log("privateKey =", starkKeyPrivAX);
-
     const starkKeyPubAX = ec.starkCurve.getStarkKey(starkKeyPrivAX);
-    console.log('publicKey =', starkKeyPubAX);
-    
+
     const constructorAXCallData=CallData.compile([starkKeyPubAX,0]);
     const accountAXAddress = hash.calculateContractAddressFromHash(starkKeyPubAX, contractAXclassHash, constructorAXCallData, 0);
-    console.log('Account address=', accountAXAddress, "\n");
+
+    console.log("path =", path, "\n");
+    console.log('publicKey =', starkKeyPubAX);
+    console.log("privateKey =", starkKeyPrivAX, '\n');
+
+    console.log('Account Send address=', accountAXAddress, "\n");
+
+    console.log('Account Receive address=', receipientAddress, "\n");
 
 
-    // ************************Start Account Deployment txn**********************************************
-
-    const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v3/6345ca3fadb74eafb7bf38b922258b1e" });
-
-    const contractAddress = "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
-    
+    // ************************Start Single txn**********************************************
     const nonce = await provider.getNonceForAddress(accountAXAddress)
-    const version = 1;
-    const maxFee = '0x6659d45d645';
-    const chainId = constants.StarknetChainId.SN_GOERLI;
-    const amount = cairo.uint256(5 * (10**8)).high;
-    const receipientAddress = '0x0063de007721dDD7CCCA23Dd9345b70F77Af7B2FCcED9E3df1f390D0f1c61E9D';
-    
+
+    const callData = [
+      version,
+      ethContractAddress,
+      hash.getSelectorFromName('transfer'),
+      '0x3',
+      receipientAddress,
+      amount,
+      '0x0'
+    ];
+    console.log({callData});
+
+    // hash msg
     const msgHash = hash.calculateTransactionHash(
       accountAXAddress,
       version,
-      [
-        '0x1',
-        contractAddress,
-        hash.getSelectorFromName('transfer'),
-        '0x3',
-        receipientAddress,
-        '0x1dcd6500',
-        '0'
-      ],
+      callData,
       maxFee,
       chainId,
       nonce
     );
+    console.log({msgHash});
 
-    // {
-    //   getTxnDetails: {
-    //     calldata: [
-    //       '0x1',
-    //       '0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
-    //       '0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e',
-    //       '0x3',
-    //       '0x63de007721ddd7ccca23dd9345b70f77af7b2fcced9e3df1f390d0f1c61e9d',
-    //       '0x1dcd6500',
-    //       '0x0'
-    //     ],
-    //     max_fee: '0x6659d45d645',
-    //     nonce: '0xc',
-    //     sender_address: '0x5b54886cff6e7684da3cf1e1ba93c34084698f19fea5be95b9ed8f417d75739',
-    //     signature: [
-    //       '0x68ebcc2b00a26b4611504ca684441b8756497717e4a8521f0694d58fd76ca1d',
-    //       '0x74dced02218bbdb82ee3b3d8d7be07aeb15574ced56c679acde729ab681e5c6'
-    //     ],
-    //     transaction_hash: '0x661ddac0a6714272d66651540e19182a0689201cbbfada95d61882c86dbbce1',
-    //     type: 'INVOKE',
-    //     version: '0x1'
-    //   }
-    // }
-
-    console.log({msgHash})
-
+    // create signature
     var signature = ec.starkCurve.sign(msgHash, starkKeyPrivAX);
     console.log(signature.toCompactHex())
-    // const signature = [`0x${sig.signature.slice(0, 64)}`, `0x${sig.signature.slice(64, 128)}`];
-    // console.log("sig:", (getTxnDetails as any).signature[0]+(getTxnDetails as any).signature[1].slice(2));
 
+    // verify signature
     const fullPubKeyAX = encode.addHexPrefix(encode.buf2hex(ec.starkCurve.getPublicKey(starkKeyPrivAX, false)));
     console.log({fullPubKeyAX})
     const signatureVerifiedStatus = ec.starkCurve.verify(signature, msgHash, fullPubKeyAX);
     console.log({signatureVerifiedStatus});
+    
+    await fetchBalances(accountAXAddress);
+    await fetchBalances(receipientAddress);
 
-    const txn = await provider.invokeFunction({
-      contractAddress: accountAXAddress,
-      entrypoint: 'transfer',
-      calldata: [
-        '0x1',
-        contractAddress,
-        hash.getSelectorFromName('transfer'),
-        '0x3',
-        receipientAddress,
-        '0x1dcd6500',
-        '0'
-      ],
-      signature: signature
-    }, {
-      nonce: nonce,
-      version: version,
-      maxFee: maxFee
-    });
+    // broadcast txn
+    // const txn = await provider.invokeFunction({
+    //   contractAddress: accountAXAddress,
+    //   entrypoint: 'transfer',
+    //   calldata: callData,
+    //   signature: signature
+    // }, {
+    //   nonce: nonce,
+    //   version: version,
+    //   maxFee: maxFee
+    // });
 
-    console.log(txn);
+    // console.log(txn);
 
-    // var calls= {
+    // await delay(2000);
+
+
+    await fetchBalances(accountAXAddress);
+    await fetchBalances(receipientAddress);
+}
+
+function uint8ArrayToHex(uint8Array: Uint8Array): string {
+    let hexString = '';
+    for (const byte of uint8Array) {
+        // Convert each byte to its hexadecimal representation
+        let hex = byte.toString(16);
+        // Pad single-digit hex values with a leading zero
+        if (hex.length === 1) {
+            hex = '0' + hex;
+        }
+        // Concatenate the hexadecimal values
+        hexString += hex;
+    }
+    return hexString;
+}
+
+const contracts: {eth: Contract | null, strk: Contract | null} = {eth: null, strk: null};
+
+async function initContracts() {
+  if (!contracts['eth']) {
+    contracts['eth'] = new Contract((await provider.getClassAt(ethContractAddress)).abi, ethContractAddress, provider);
+  }
+
+  if (!contracts['strk']) {
+    contracts['strk'] = new Contract((await provider.getClassAt(strkContractAddress)).abi, strkContractAddress, provider);
+  }
+}
+
+async function fetchBalances(accountAXAddress: string) {
+  await initContracts();
+  const ethBalance = await (contracts.eth!).balanceOf(accountAXAddress) as bigint;
+  const strkBalance = await (contracts.strk!).balanceOf(accountAXAddress) as bigint;
+
+  console.log(formatBalance(ethBalance, 18) + " ETH", formatBalance(strkBalance, 18) + " STRK");
+}
+function formatBalance(qty: bigint, decimals: number): string {
+  const balance = String("0").repeat(decimals) + qty.toString();
+  const rightCleaned = balance.slice(-decimals).replace(/(\d)0+$/gm, '$1');
+  const leftCleaned = BigInt(balance.slice(0, balance.length - decimals)).toString();
+  return leftCleaned + "." + rightCleaned;
+}
+
+run()
+
+
+ // var calls= {
     //   contractAddress: '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
     //   entrypoint: 'transfer',
     //   calldata: {
@@ -164,21 +189,26 @@ const run = async () => {
     //     '500000000',
     //     '0'
     //   ]
-}
 
-function uint8ArrayToHex(uint8Array: Uint8Array): string {
-    let hexString = '';
-    for (const byte of uint8Array) {
-        // Convert each byte to its hexadecimal representation
-        let hex = byte.toString(16);
-        // Pad single-digit hex values with a leading zero
-        if (hex.length === 1) {
-            hex = '0' + hex;
-        }
-        // Concatenate the hexadecimal values
-        hexString += hex;
-    }
-    return hexString;
-}
-
-run()
+    //   getTxnDetails: {
+    //     calldata: [
+    //       '0x1',
+    //       '0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
+    //       '0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e',
+    //       '0x3',
+    //       '0x63de007721ddd7ccca23dd9345b70f77af7b2fcced9e3df1f390d0f1c61e9d',
+    //       '0x1dcd6500',
+    //       '0x0'
+    //     ],
+    //     max_fee: '0x6659d45d645',
+    //     nonce: '0xc',
+    //     sender_address: '0x5b54886cff6e7684da3cf1e1ba93c34084698f19fea5be95b9ed8f417d75739',
+    //     signature: [
+    //       '0x68ebcc2b00a26b4611504ca684441b8756497717e4a8521f0694d58fd76ca1d',
+    //       '0x74dced02218bbdb82ee3b3d8d7be07aeb15574ced56c679acde729ab681e5c6'
+    //     ],
+    //     transaction_hash: '0x661ddac0a6714272d66651540e19182a0689201cbbfada95d61882c86dbbce1',
+    //     type: 'INVOKE',
+    //     version: '0x1'
+    //   }
+    // }
