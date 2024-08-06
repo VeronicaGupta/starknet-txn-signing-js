@@ -4,7 +4,7 @@ import * as mStarknet from '@scure/starknet';
 import * as bip32 from "@scure/bip32";
 import * as bip39 from '@scure/bip39';
 
-const address_idx = 0;
+const address_idx = 12;
 
 const mnemonic = "road donate inch warm beyond sea wink shoot fashion gain put vocal";
 const contractAXclassHash = "0x029927c8af6bccf3f6fda035981e765a7bdbf18a2dc0d630494f8758aa908e2b";
