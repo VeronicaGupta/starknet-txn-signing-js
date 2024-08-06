@@ -23,4 +23,4 @@ maxFee
 
 Note (6th Aug 2024)- Goerli depreciated in april 2024, use sepolia
 
-Make Changes in the account type and the infura API
+Make Changes in the account type and the infura RPC API
