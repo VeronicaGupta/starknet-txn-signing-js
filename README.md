@@ -9,6 +9,9 @@ pnpm i @scure/starknet
 ts-node <scriptname>.ts
 ```
 
+// "fs.f.ts": "link:@types/node/fs.f.ts",
+// "utils": "link:@noble/curves/abstract/utils"
+
 ### Change as required
 ```
 address_idx

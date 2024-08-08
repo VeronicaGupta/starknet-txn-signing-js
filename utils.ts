@@ -1,5 +1,5 @@
 export function uint8ArrayToHex(uint8Array: Uint8Array): string {
-    let hexString = '';
+    let hexString = '0x';
     for (const byte of uint8Array) {
         // Convert each byte to its hexadecimal representation
         let hex = byte.toString(16);

@@ -9,7 +9,7 @@ import { formatBalance, uint8ArrayToHex } from "./utils";
 
 const mnemonic = "road donate inch warm beyond sea wink shoot fashion gain put vocal";
 const contractclassHashAX = "0x029927c8af6bccf3f6fda035981e765a7bdbf18a2dc0d630494f8758aa908e2b";
-const provider = new RpcProvider({ nodeUrl: "https://starknet-goerli.infura.io/v3/6345ca3fadb74eafb7bf38b922258b1e" });
+const provider = new RpcProvider({ nodeUrl: "https://starknet-sepolia.infura.io/v3/6345ca3fadb74eafb7bf38b922258b1e" });
 const contractAddress = "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
 const EthPath = "m/44'/60'/0'/0/0";
 const StarkBasePath = "m/44'/9004'/0'/0/";
@@ -43,10 +43,10 @@ const run = async () => {
     var callData = CallData.compile([starkKeyPubAX0,0]);
     const accountAddressAX0 = hash.calculateContractAddressFromHash(starkKeyPubAX0, contractclassHashAX, callData, 0);
     
-    console.log('hdKeyi PrivKey=', uint8ArrayToHex(hdKeyi.privateKey!));
-    console.log("privateKey =", starkKeyPrivAX0);
-    console.log('publicKey =', starkKeyPubAX0);
-    console.log('Account address=', accountAddressAX0, "\n");
+    console.log('ecdsaPrivateKey=', uint8ArrayToHex(hdKeyi.privateKey!));
+    console.log("starkPrivateKey =", starkKeyPrivAX0);
+    console.log('starkPublicKey =', starkKeyPubAX0);
+    console.log('starkAccount=', accountAddressAX0, "\n");
 
     // Account 2
     path = StarkBasePath + String(address_idx1);
