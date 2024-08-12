@@ -22,6 +22,12 @@ txnVersion
 maxFee
 ```
 
+### RUN
+
+```
+pnpm ts-node sign_txn.ts
+```
+
 ### WARNING
 
 Note (6th Aug 2024)- Goerli depreciated in april 2024, use sepolia
